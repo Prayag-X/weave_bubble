@@ -14,7 +14,7 @@ class Bubble extends StatelessWidget {
       valueListenable: bubbleController,
       builder: (context, _, __) => MovableArea(
         child: BubbleWidget(
-          painter: BubblePainter(streams: bubbleController.streams),
+          bubbleController: bubbleController,
         ),
       ),
     );

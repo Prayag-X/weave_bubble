@@ -1,24 +1,25 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:weave_bubble/src/widgets/painters/bubble_painter.dart';
-import 'package:weave_bubble/src/widgets/widgets.dart';
 import 'package:weave_bubble/src/controller/controllers.dart';
+import 'package:weave_bubble/src/widgets/painters/bubble_painter.dart';
 
 class BubbleWidget extends StatefulWidget {
   const BubbleWidget({
     super.key,
-    required this.painter,
+    required this.bubbleController,
   });
 
-  final BubblePainter painter;
+  final BubbleController bubbleController;
 
   @override
   State<BubbleWidget> createState() => _BubbleWidgetState();
 }
 
-class _BubbleWidgetState extends State<BubbleWidget> with BubbleMixinStateful {
+class _BubbleWidgetState extends State<BubbleWidget> {
   Timer? _timer;
+
+  BubbleController get bubbleController => widget.bubbleController;
 
   @override
   void initState() {
@@ -38,7 +39,7 @@ class _BubbleWidgetState extends State<BubbleWidget> with BubbleMixinStateful {
   }
 
   @override
-  Widget buildWithListener(BuildContext context) {
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: bubbleController.interaction.state.isActive
           ? () {
@@ -53,6 +54,18 @@ class _BubbleWidgetState extends State<BubbleWidget> with BubbleMixinStateful {
               bubbleController.themeState = const BubbleStateSpinning();
               bubbleController.interactionStateIsActive = true;
             },
+      onLongPress: () {
+        bubbleController.interaction.preAction();
+        bubbleController.interaction.onHold();
+        bubbleController.themeState = const BubbleStateSpinning();
+        bubbleController.interactionStateIsActive = true;
+      },
+      onLongPressEnd: (LongPressEndDetails details) {
+        bubbleController.interaction.preAction();
+        bubbleController.interaction.onRelease();
+        bubbleController.themeState = const BubbleStateStopped();
+        bubbleController.interactionStateIsActive = false;
+      },
       child: Container(
         width: bubbleController.settings.bubbleSize.width,
         height: bubbleController.settings.bubbleSize.height,
